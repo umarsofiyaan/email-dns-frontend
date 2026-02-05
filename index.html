@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email DNS Inspector</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary-bg: #0a0e1a;
+      --secondary-bg: #141927;
+      --card-bg: #1a1f33;
+      --border: #2a3246;
+      --text-primary: #e8eaf0;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      --pass: #10b981;
+      --warn: #f59e0b;
+      --fail: #ef4444;
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+    }
+
+    body {
+      font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--primary-bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+      animation: fadeInDown 0.6s ease-out;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .header p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+
+    /* Input Section */
+    .input-section {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      animation: fadeInUp 0.6s ease-out 0.1s backwards;
+    }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .input-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .input-group label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .input-group input {
+      background: var(--secondary-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.875rem 1rem;
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .input-group input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .check-button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+    }
+
+    .check-button:hover:not(:disabled) {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .check-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Loading State */
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Results Grid */
+    .results-grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .section-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.3s;
+      animation: fadeInUp 0.6s ease-out backwards;
+    }
+
+    .section-card:nth-child(1) { animation-delay: 0.1s; }
+    .section-card:nth-child(2) { animation-delay: 0.2s; }
+    .section-card:nth-child(3) { animation-delay: 0.3s; }
+    .section-card:nth-child(4) { animation-delay: 0.4s; }
+    .section-card:nth-child(5) { animation-delay: 0.5s; }
+
+    .section-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-title h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.375rem 0.875rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .status-badge.pass {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--pass);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .status-badge.warn {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--warn);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .status-badge.fail {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--fail);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .status-badge.skipped {
+      background: rgba(107, 114, 128, 0.15);
+      color: var(--text-muted);
+      border: 1px solid rgba(107, 114, 128, 0.3);
+    }
+
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    .status-badge.pass .status-indicator {
+      background: var(--pass);
+    }
+
+    .status-badge.warn .status-indicator {
+      background: var(--warn);
+    }
+
+    .status-badge.fail .status-indicator {
+      background: var(--fail);
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .expand-icon {
+      color: var(--text-secondary);
+      transition: transform 0.3s;
+      font-size: 1.25rem;
+    }
+
+    .section-header.expanded .expand-icon {
+      transform: rotate(90deg);
+    }
+
+    .section-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+
+    .section-content.expanded {
+      max-height: 2000px;
+    }
+
+    .section-inner {
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Info Box */
+    .info-box {
+      background: var(--secondary-bg);
+      border-left: 3px solid var(--accent);
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .info-box strong {
+      color: var(--text-primary);
+    }
+
+    /* Issues List */
+    .issues-list {
+      margin-top: 1rem;
+    }
+
+    .issue-item {
+      display: flex;
+      align-items: start;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: var(--secondary-bg);
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border-left: 3px solid var(--warn);
+    }
+
+    .issue-item.error {
+      border-left-color: var(--fail);
+    }
+
+    .issue-icon {
+      flex-shrink: 0;
+      margin-top: 0.125rem;
+    }
+
+    .issue-text {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    /* Data Table */
+    .data-table {
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    .data-row {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 1rem;
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-row:last-child {
+      border-bottom: none;
+    }
+
+    .data-label {
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .data-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      word-break: break-all;
+    }
+
+    /* MX Records Table */
+    .mx-table {
+      width: 100%;
+      margin-top: 1rem;
+      border-collapse: collapse;
+    }
+
+    .mx-table th {
+      text-align: left;
+      padding: 0.75rem;
+      background: var(--secondary-bg);
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .mx-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
+    }
+
+    .mx-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* DKIM Selectors */
+    .dkim-selector {
+      background: var(--secondary-bg);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .dkim-selector-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .dkim-selector-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: var(--accent);
+      font-size: 1rem;
+    }
+
+    .dkim-meta {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .dkim-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Code Block */
+    .code-block {
+      background: var(--secondary-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--text-primary);
+      overflow-x: auto;
+      margin-top: 0.5rem;
+      line-height: 1.6;
+    }
+
+    /* Tooltip */
+    .tooltip {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      margin-left: 0.5rem;
+      cursor: help;
+    }
+
+    .tooltip-icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--border);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .tooltip:hover .tooltip-icon {
+      background: var(--accent);
+      color: white;
+    }
+
+    .tooltip-text {
+      visibility: hidden;
+      position: absolute;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--secondary-bg);
+      border: 1px solid var(--border);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      width: 280px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.2s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .tooltip:hover .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .tooltip-text::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: var(--border);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    const API_URL = 'https://email-dns-backend.onrender.com';
+
+    // ═══════════════════════════════════════════════════════════
+    // Tooltip Component
+    // ═══════════════════════════════════════════════════════════
+    function Tooltip({ text }) {
+      return (
+        <span className="tooltip">
+          <span className="tooltip-icon">?</span>
+          <span className="tooltip-text">{text}</span>
+        </span>
+      );
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // Status Badge Component
+    // ═══════════════════════════════════════════════════════════
+    function StatusBadge({ status }) {
+      return (
+        <span className={`status-badge ${status.toLowerCase()}`}>
+          <span className="status-indicator"></span>
+          {status}
+        </span>
+      );
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // Issue Alert Component
+    // ═══════════════════════════════════════════════════════════
+    function IssueAlert({ issues, type = 'warning' }) {
+      if (!issues || issues.length === 0) return null;
+
+      return (
+        <div className="issues-list">
+          {issues.map((issue, index) => (
+            <div key={index} className={`issue-item ${type === 'error' ? 'error' : ''}`}>
+              <span className="issue-icon">{type === 'error' ? '✕' : '⚠'}</span>
+              <span className="issue-text">{issue}</span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // MX Records Section
+    // ═══════════════════════════════════════════════════════════
+    function MXSection({ data }) {
+      const [expanded, setExpanded] = useState(true);
+
+      return (
+        <div className="section-card">
+          <div className={`section-header ${expanded ? 'expanded' : ''}`} onClick={() => setExpanded(!expanded)}>
+            <div className="section-title">
+              <h3>MX Records</h3>
+              <Tooltip text="Mail Exchange (MX) records specify which servers accept email for your domain. Properly configured MX records ensure reliable email delivery." />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <StatusBadge status={data.status} />
+              <span className="expand-icon">›</span>
+            </div>
+          </div>
+          <div className={`section-content ${expanded ? 'expanded' : ''}`}>
+            <div className="section-inner">
+              {data.provider && (
+                <div className="info-box">
+                  <strong>Detected Provider:</strong> {data.provider}
+                </div>
+              )}
+              
+              {data.records && data.records.length > 0 && (
+                <table className="mx-table">
+                  <thead>
+                    <tr>
+                      <th>Priority</th>
+                      <th>Mail Server</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.records.map((record, index) => (
+                      <tr key={index}>
+                        <td>{record.priority}</td>
+                        <td>{record.exchange}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+              
+              <IssueAlert issues={data.issues} type={data.status === 'FAIL' ? 'error' : 'warning'} />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // SPF Section
+    // ═══════════════════════════════════════════════════════════
+    function SPFSection({ data }) {
+      const [expanded, setExpanded] = useState(true);
+
+      return (
+        <div className="section-card">
+          <div className={`section-header ${expanded ? 'expanded' : ''}`} onClick={() => setExpanded(!expanded)}>
+            <div className="section-title">
+              <h3>SPF Record</h3>
+              <Tooltip text="Sender Policy Framework (SPF) prevents email spoofing by specifying which IP addresses are authorized to send email on behalf of your domain." />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <StatusBadge status={data.status} />
+              <span className="expand-icon">›</span>
+            </div>
+          </div>
+          <div className={`section-content ${expanded ? 'expanded' : ''}`}>
+            <div className="section-inner">
+              {data.record && (
+                <>
+                  <div className="data-table">
+                    <div className="data-row">
+                      <div className="data-label">Policy</div>
+                      <div className="data-value">{data.policy}</div>
+                    </div>
+                    <div className="data-row">
+                      <div className="data-label">DNS Lookups</div>
+                      <div className="data-value">{data.lookupCount} / 10 {data.lookupCount > 10 ? '❌' : '✓'}</div>
+                    </div>
+                  </div>
+                  <div className="code-block">{data.record}</div>
+                </>
+              )}
+              
+              <IssueAlert issues={data.issues} type={data.status === 'FAIL' ? 'error' : 'warning'} />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // DKIM Section
+    // ═══════════════════════════════════════════════════════════
+    function DKIMSection({ data }) {
+      const [expanded, setExpanded] = useState(true);
+
+      return (
+        <div className="section-card">
+          <div className={`section-header ${expanded ? 'expanded' : ''}`} onClick={() => setExpanded(!expanded)}>
+            <div className="section-title">
+              <h3>DKIM Records</h3>
+              <Tooltip text="DomainKeys Identified Mail (DKIM) adds a digital signature to your emails, proving they haven't been tampered with and came from your domain." />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <StatusBadge status={data.status} />
+              <span className="expand-icon">›</span>
+            </div>
+          </div>
+          <div className={`section-content ${expanded ? 'expanded' : ''}`}>
+            <div className="section-inner">
+              {data.selectors && data.selectors.length > 0 ? (
+                data.selectors.map((selector, index) => (
+                  <div key={index} className="dkim-selector">
+                    <div className="dkim-selector-header">
+                      <div className="dkim-selector-name">{selector.selector}._domainkey</div>
+                      {selector.provider !== 'Unknown' && (
+                        <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                          {selector.provider}
+                        </div>
+                      )}
+                    </div>
+                    <div className="dkim-meta">
+                      <div className="dkim-meta-item">
+                        <span>🔑</span>
+                        <span>{selector.keyType}</span>
+                      </div>
+                      <div className="dkim-meta-item">
+                        <span>📏</span>
+                        <span>{selector.keySize}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="info-box">
+                  No DKIM records found on common selectors. This doesn't necessarily mean DKIM is missing - your domain may use custom selectors.
+                </div>
+              )}
+              
+              <IssueAlert issues={data.issues} type="warning" />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // DMARC Section
+    // ═══════════════════════════════════════════════════════════
+    function DMARCSection({ data }) {
+      const [expanded, setExpanded] = useState(true);
+
+      return (
+        <div className="section-card">
+          <div className={`section-header ${expanded ? 'expanded' : ''}`} onClick={() => setExpanded(!expanded)}>
+            <div className="section-title">
+              <h3>DMARC Record</h3>
+              <Tooltip text="Domain-based Message Authentication, Reporting & Conformance (DMARC) builds on SPF and DKIM to tell receiving servers what to do with emails that fail authentication checks." />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <StatusBadge status={data.status} />
+              <span className="expand-icon">›</span>
+            </div>
+          </div>
+          <div className={`section-content ${expanded ? 'expanded' : ''}`}>
+            <div className="section-inner">
+              {data.record && (
+                <>
+                  <div className="data-table">
+                    <div className="data-row">
+                      <div className="data-label">Policy</div>
+                      <div className="data-value">{data.policy}</div>
+                    </div>
+                    <div className="data-row">
+                      <div className="data-label">DKIM Alignment</div>
+                      <div className="data-value">{data.adkim}</div>
+                    </div>
+                    <div className="data-row">
+                      <div className="data-label">SPF Alignment</div>
+                      <div className="data-value">{data.aspf}</div>
+                    </div>
+                    {data.rua && (
+                      <div className="data-row">
+                        <div className="data-label">Aggregate Reports</div>
+                        <div className="data-value">{data.rua}</div>
+                      </div>
+                    )}
+                    {data.ruf && (
+                      <div className="data-row">
+                        <div className="data-label">Forensic Reports</div>
+                        <div className="data-value">{data.ruf}</div>
+                      </div>
+                    )}
+                    <div className="data-row">
+                      <div className="data-label">Percentage</div>
+                      <div className="data-value">{data.pct}%</div>
+                    </div>
+                  </div>
+                  <div className="code-block">{data.record}</div>
+                </>
+              )}
+              
+              <IssueAlert issues={data.issues} type={data.status === 'FAIL' ? 'error' : 'warning'} />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // PTR Section
+    // ═══════════════════════════════════════════════════════════
+    function PTRSection({ data }) {
+      const [expanded, setExpanded] = useState(true);
+
+      return (
+        <div className="section-card">
+          <div className={`section-header ${expanded ? 'expanded' : ''}`} onClick={() => setExpanded(!expanded)}>
+            <div className="section-title">
+              <h3>PTR Record (Reverse DNS)</h3>
+              <Tooltip text="PTR records provide reverse DNS lookup, mapping an IP address back to a domain name. Many email servers require valid PTR records to accept incoming mail." />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <StatusBadge status={data.status} />
+              <span className="expand-icon">›</span>
+            </div>
+          </div>
+          <div className={`section-content ${expanded ? 'expanded' : ''}`}>
+            <div className="section-inner">
+              {data.hostname && (
+                <div className="data-table">
+                  <div className="data-row">
+                    <div className="data-label">PTR Hostname</div>
+                    <div className="data-value">{data.hostname}</div>
+                  </div>
+                  <div className="data-row">
+                    <div className="data-label">FC-rDNS</div>
+                    <div className="data-value">{data.fcRdns ? '✓ PASS' : '✕ FAIL'}</div>
+                  </div>
+                </div>
+              )}
+              
+              <IssueAlert issues={data.issues} type={data.status === 'FAIL' ? 'error' : 'warning'} />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // Main App Component
+    // ═══════════════════════════════════════════════════════════
+    function App() {
+      const [domain, setDomain] = useState('');
+      const [ip, setIp] = useState('');
+      const [loading, setLoading] = useState(false);
+      const [results, setResults] = useState(null);
+      const [error, setError] = useState(null);
+
+      const handleCheck = async () => {
+        if (!domain.trim()) {
+          setError('Please enter a domain name');
+          return;
+        }
+
+        setLoading(true);
+        setError(null);
+        setResults(null);
+
+        try {
+          const response = await fetch(`${API_URL}/api/check`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ domain: domain.trim(), ip: ip.trim() || null }),
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to check DNS records');
+          }
+
+          const data = await response.json();
+          setResults(data);
+        } catch (err) {
+          setError(err.message || 'An error occurred while checking DNS records');
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      return (
+        <div className="app-container">
+          <header className="header">
+            <h1>Email DNS Inspector</h1>
+            <p>Comprehensive email authentication & DNS record analysis</p>
+          </header>
+
+          <div className="input-section">
+            <div className="input-grid">
+              <div className="input-group">
+                <label htmlFor="domain">Domain Name *</label>
+                <input
+                  id="domain"
+                  type="text"
+                  placeholder="example.com"
+                  value={domain}
+                  onChange={(e) => setDomain(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleCheck()}
+                />
+              </div>
+              <div className="input-group">
+                <label htmlFor="ip">Sending IP Address (Optional)</label>
+                <input
+                  id="ip"
+                  type="text"
+                  placeholder="192.0.2.1"
+                  value={ip}
+                  onChange={(e) => setIp(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleCheck()}
+                />
+              </div>
+            </div>
+            <button className="check-button" onClick={handleCheck} disabled={loading}>
+              {loading ? 'Checking DNS Records...' : 'Check DNS'}
+            </button>
+          </div>
+
+          {error && (
+            <div className="issue-item error" style={{ marginBottom: '2rem' }}>
+              <span className="issue-icon">✕</span>
+              <span className="issue-text">{error}</span>
+            </div>
+          )}
+
+          {loading && (
+            <div className="loading">
+              <div className="loading-spinner"></div>
+              <p>Analyzing DNS records for {domain}...</p>
+            </div>
+          )}
+
+          {results && !loading && (
+            <div className="results-grid">
+              <MXSection data={results.mx} />
+              <SPFSection data={results.spf} />
+              <DKIMSection data={results.dkim} />
+              <DMARCSection data={results.dmarc} />
+              <PTRSection data={results.ptr} />
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
