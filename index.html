@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Email DNS Inspector</title>
+  <title>Email DNS Inspector - Professional Email Security Analysis</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -14,11 +14,7 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
-    * { 
-      margin: 0; 
-      padding: 0; 
-      box-sizing: border-box; 
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
       --primary-bg: #0a0e1a;
@@ -43,502 +39,221 @@
       min-height: 100vh;
     }
 
-    .app-container { 
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem;
-    }
-
-    /* ============ HEADER ============ */
-    .header {
-      text-align: center;
-      margin-bottom: 2.5rem;
-      animation: fadeInDown 0.6s ease-out;
-    }
-
+    .app-container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .header { text-align: center; margin-bottom: 2.5rem; animation: fadeInDown 0.6s ease-out; }
     .header h1 {
-      font-size: 2.5rem;
-      font-weight: 700;
+      font-size: 2.5rem; font-weight: 700;
       background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 0.5rem;
-      letter-spacing: -0.02em;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 0.5rem; letter-spacing: -0.02em;
     }
+    .header p { color: var(--text-secondary); font-size: 1.05rem; }
 
-    .header p {
-      color: var(--text-secondary);
-      font-size: 1.05rem;
-    }
-
-    /* ============ INPUT SECTION ============ */
     .input-section {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 2rem;
-      margin-bottom: 2rem;
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 12px; padding: 2rem; margin-bottom: 2rem;
       animation: fadeInUp 0.6s ease-out 0.1s backwards;
     }
-
-    .input-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-
-    @media (max-width: 768px) {
-      .input-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .input-group {
-      display: flex;
-      flex-direction: column;
-    }
-
+    .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+    @media (max-width: 768px) { .input-grid { grid-template-columns: 1fr; } }
+    .input-group { display: flex; flex-direction: column; }
     .input-group label {
-      display: block;
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-      margin-bottom: 0.5rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      display: block; font-size: 0.875rem; font-weight: 600;
+      color: var(--text-secondary); margin-bottom: 0.5rem;
+      text-transform: uppercase; letter-spacing: 0.05em;
     }
-
     .input-group label .optional {
-      color: var(--text-muted);
-      font-size: 0.75rem;
-      text-transform: lowercase;
-      font-weight: 500;
-      margin-left: 0.5rem;
+      color: var(--text-muted); font-size: 0.75rem;
+      text-transform: lowercase; font-weight: 500; margin-left: 0.5rem;
     }
-
     .input-group input {
-      width: 100%;
-      background: var(--secondary-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.875rem 1rem;
-      color: var(--text-primary);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.95rem;
+      width: 100%; background: var(--secondary-bg);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.875rem 1rem; color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace; font-size: 0.95rem;
       transition: all 0.2s;
     }
-
     .input-group input:focus {
-      outline: none;
-      border-color: var(--accent);
+      outline: none; border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     }
-
-    .input-group input::placeholder {
-      color: var(--text-muted);
-    }
-
+    .input-group input::placeholder { color: var(--text-muted); }
     .check-button {
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 1rem 2rem;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      width: 100%;
-      font-family: 'Work Sans', sans-serif;
+      background: var(--accent); color: white; border: none;
+      border-radius: 8px; padding: 1rem 2rem; font-size: 1rem;
+      font-weight: 600; cursor: pointer; transition: all 0.2s;
+      width: 100%; font-family: 'Work Sans', sans-serif;
     }
-
     .check-button:hover:not(:disabled) {
-      background: var(--accent-hover);
-      transform: translateY(-1px);
+      background: var(--accent-hover); transform: translateY(-1px);
       box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
     }
+    .check-button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-    .check-button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    /* ============ LOADING STATE ============ */
-    .loading {
-      text-align: center;
-      padding: 3rem;
-      animation: fadeIn 0.3s ease-out;
-    }
-
+    .loading { text-align: center; padding: 3rem; animation: fadeIn 0.3s ease-out; }
     .loading-spinner {
-      width: 50px;
-      height: 50px;
-      border: 4px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 1rem;
+      width: 50px; height: 50px; border: 4px solid var(--border);
+      border-top-color: var(--accent); border-radius: 50%;
+      animation: spin 1s linear infinite; margin: 0 auto 1rem;
     }
+    .loading-text { color: var(--text-secondary); font-size: 0.95rem; }
 
-    .loading-text {
-      color: var(--text-secondary);
-      font-size: 0.95rem;
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    @keyframes fadeInDown {
-      from {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* ============ SECTION CARDS ============ */
     .section-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      transition: all 0.3s;
-      animation: fadeInUp 0.6s ease-out backwards;
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;
+      transition: all 0.3s; animation: fadeInUp 0.6s ease-out backwards;
     }
-
     .section-card:nth-child(1) { animation-delay: 0.1s; }
     .section-card:nth-child(2) { animation-delay: 0.2s; }
     .section-card:nth-child(3) { animation-delay: 0.3s; }
     .section-card:nth-child(4) { animation-delay: 0.4s; }
     .section-card:nth-child(5) { animation-delay: 0.5s; }
-
-    .section-card:hover {
-      border-color: var(--accent);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-    }
+    .section-card:nth-child(6) { animation-delay: 0.6s; }
+    .section-card:nth-child(7) { animation-delay: 0.7s; }
+    .section-card:hover { border-color: var(--accent); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3); }
 
     .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1.25rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);
     }
+    .section-header h3 { font-size: 1.25rem; font-weight: 600; color: var(--text-primary); }
 
-    .section-header h3 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-
-    /* ============ STATUS BADGES ============ */
     .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.375rem 0.875rem;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.375rem 0.875rem; border-radius: 6px;
+      font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
     }
+    .status-badge.pass { background: rgba(16, 185, 129, 0.15); color: var(--pass); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .status-badge.warn { background: rgba(245, 158, 11, 0.15); color: var(--warn); border: 1px solid rgba(245, 158, 11, 0.3); }
+    .status-badge.fail { background: rgba(239, 68, 68, 0.15); color: var(--fail); border: 1px solid rgba(239, 68, 68, 0.3); }
+    .status-badge.skipped { background: rgba(107, 114, 128, 0.15); color: var(--text-muted); border: 1px solid rgba(107, 114, 128, 0.3); }
+    .status-indicator { width: 8px; height: 8px; border-radius: 50%; animation: pulse-dot 2s ease-in-out infinite; }
+    .status-badge.pass .status-indicator { background: var(--pass); }
+    .status-badge.warn .status-indicator { background: var(--warn); }
+    .status-badge.fail .status-indicator { background: var(--fail); }
+    @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-    .status-badge.pass {
-      background: rgba(16, 185, 129, 0.15);
-      color: var(--pass);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-    }
-
-    .status-badge.warn {
-      background: rgba(245, 158, 11, 0.15);
-      color: var(--warn);
-      border: 1px solid rgba(245, 158, 11, 0.3);
-    }
-
-    .status-badge.fail {
-      background: rgba(239, 68, 68, 0.15);
-      color: var(--fail);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-    }
-
-    .status-badge.skipped {
-      background: rgba(107, 114, 128, 0.15);
-      color: var(--text-muted);
-      border: 1px solid rgba(107, 114, 128, 0.3);
-    }
-
-    .status-indicator {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      animation: pulse-dot 2s ease-in-out infinite;
-    }
-
-    .status-badge.pass .status-indicator {
-      background: var(--pass);
-    }
-
-    .status-badge.warn .status-indicator {
-      background: var(--warn);
-    }
-
-    .status-badge.fail .status-indicator {
-      background: var(--fail);
-    }
-
-    @keyframes pulse-dot {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-
-    /* ============ INFO BOX ============ */
     .info-box {
-      background: var(--secondary-bg);
-      border-left: 3px solid var(--accent);
-      padding: 1rem;
-      border-radius: 6px;
-      margin-bottom: 1rem;
-      font-size: 0.9rem;
-      line-height: 1.6;
+      background: var(--secondary-bg); border-left: 3px solid var(--accent);
+      padding: 1rem; border-radius: 6px; margin-bottom: 1rem;
+      font-size: 0.9rem; line-height: 1.6;
     }
+    .info-box strong { color: var(--text-primary); font-weight: 600; }
+    .info-box-content { color: var(--text-secondary); }
 
-    .info-box strong {
-      color: var(--text-primary);
-      font-weight: 600;
-    }
-
-    .info-box-content {
-      color: var(--text-secondary);
-    }
-
-    /* ============ DATA TABLE ============ */
-    .data-table {
-      width: 100%;
-      margin-top: 1rem;
-    }
-
+    .data-table { width: 100%; margin-top: 1rem; }
     .data-row {
-      display: grid;
-      grid-template-columns: 180px 1fr;
-      gap: 1rem;
-      padding: 0.75rem 0;
-      border-bottom: 1px solid var(--border);
-      align-items: start;
+      display: grid; grid-template-columns: 180px 1fr; gap: 1rem;
+      padding: 0.75rem 0; border-bottom: 1px solid var(--border); align-items: start;
     }
-
-    .data-row:last-child {
-      border-bottom: none;
-    }
-
-    .data-label {
-      font-weight: 600;
-      color: var(--text-secondary);
-      font-size: 0.875rem;
-    }
-
+    .data-row:last-child { border-bottom: none; }
+    .data-label { font-weight: 600; color: var(--text-secondary); font-size: 0.875rem; }
     .data-value {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.875rem;
-      color: var(--text-primary);
-      word-break: break-word;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.875rem;
+      color: var(--text-primary); word-break: break-word;
     }
 
-    /* ============ MX TABLE ============ */
-    .mx-table {
-      width: 100%;
-      margin-top: 1rem;
-      border-collapse: collapse;
-    }
-
-    .mx-table thead {
-      background: var(--secondary-bg);
-    }
-
+    .mx-table { width: 100%; margin-top: 1rem; border-collapse: collapse; }
+    .mx-table thead { background: var(--secondary-bg); }
     .mx-table th {
-      text-align: left;
-      padding: 0.875rem 1rem;
-      color: var(--text-secondary);
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      border-bottom: 2px solid var(--border);
+      text-align: left; padding: 0.875rem 1rem; color: var(--text-secondary);
+      font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.05em; border-bottom: 2px solid var(--border);
     }
-
     .mx-table td {
-      padding: 0.875rem 1rem;
-      border-bottom: 1px solid var(--border);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.875rem;
-      color: var(--text-primary);
+      padding: 0.875rem 1rem; border-bottom: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace; font-size: 0.875rem; color: var(--text-primary);
     }
+    .mx-table tbody tr:last-child td { border-bottom: none; }
+    .mx-table tbody tr:hover { background: var(--secondary-bg); }
 
-    .mx-table tbody tr:last-child td {
-      border-bottom: none;
-    }
-
-    .mx-table tbody tr:hover {
-      background: var(--secondary-bg);
-    }
-
-    /* ============ DKIM SELECTORS ============ */
     .dkim-selector {
-      background: var(--secondary-bg);
-      border-radius: 8px;
-      padding: 1.25rem;
-      margin-bottom: 1rem;
-      border: 1px solid var(--border);
+      background: var(--secondary-bg); border-radius: 8px;
+      padding: 1.25rem; margin-bottom: 1rem; border: 1px solid var(--border);
       transition: all 0.2s;
     }
-
-    .dkim-selector:hover {
-      border-color: var(--accent);
-    }
-
+    .dkim-selector:hover { border-color: var(--accent); }
     .dkim-selector-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 0.875rem;
-      flex-wrap: wrap;
-      gap: 0.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 0.875rem; flex-wrap: wrap; gap: 0.5rem;
     }
-
     .dkim-selector-name {
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 600;
-      color: var(--accent);
-      font-size: 0.95rem;
+      font-family: 'JetBrains Mono', monospace; font-weight: 600;
+      color: var(--accent); font-size: 0.95rem;
     }
-
     .dkim-meta {
-      display: flex;
-      gap: 1.5rem;
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      flex-wrap: wrap;
+      display: flex; gap: 1.5rem; font-size: 0.85rem;
+      color: var(--text-secondary); flex-wrap: wrap;
     }
+    .dkim-meta-item { display: flex; align-items: center; gap: 0.4rem; }
 
-    .dkim-meta-item {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    /* ============ CODE BLOCK ============ */
     .code-block {
-      background: var(--secondary-bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 1rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-      color: var(--text-primary);
-      overflow-x: auto;
-      margin-top: 0.75rem;
-      line-height: 1.6;
-      word-break: break-all;
-      white-space: pre-wrap;
+      background: var(--secondary-bg); border: 1px solid var(--border);
+      border-radius: 6px; padding: 1rem;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+      color: var(--text-primary); overflow-x: auto; margin-top: 0.75rem;
+      line-height: 1.6; word-break: break-all; white-space: pre-wrap;
     }
 
-    /* ============ EMPTY STATE ============ */
-    .empty-state {
-      text-align: center;
-      padding: 3rem 2rem;
-      color: var(--text-muted);
-    }
-
-    .empty-state-icon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-      opacity: 0.5;
-    }
-
+    .empty-state { text-align: center; padding: 3rem 2rem; color: var(--text-muted); }
+    .empty-state-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; }
     .empty-state-title {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-      margin-bottom: 0.5rem;
+      font-size: 1.25rem; font-weight: 600;
+      color: var(--text-secondary); margin-bottom: 0.5rem;
     }
+    .empty-state-text { font-size: 0.95rem; color: var(--text-muted); }
 
-    .empty-state-text {
-      font-size: 0.95rem;
-      color: var(--text-muted);
-    }
-
-    /* ============ ERROR STATE ============ */
     .error-banner {
-      background: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      border-left: 4px solid var(--fail);
-      border-radius: 8px;
-      padding: 1rem 1.25rem;
-      margin-bottom: 2rem;
-      display: flex;
-      align-items: start;
-      gap: 1rem;
-      animation: fadeInUp 0.3s ease-out;
+      background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);
+      border-left: 4px solid var(--fail); border-radius: 8px;
+      padding: 1rem 1.25rem; margin-bottom: 2rem;
+      display: flex; align-items: start; gap: 1rem; animation: fadeInUp 0.3s ease-out;
+    }
+    .error-icon { font-size: 1.5rem; flex-shrink: 0; }
+    .error-content { flex: 1; }
+    .error-title { font-weight: 600; color: var(--fail); margin-bottom: 0.25rem; }
+    .error-message { font-size: 0.9rem; color: var(--text-secondary); }
+
+    .no-results { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 1rem; }
+    .no-results-content { color: var(--text-muted); font-size: 0.9rem; line-height: 1.8; }
+
+    .mechanism-list { margin-top: 1rem; }
+    .mechanism-item {
+      background: var(--secondary-bg); padding: 0.75rem 1rem;
+      border-radius: 6px; margin-bottom: 0.5rem;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .mechanism-type {
+      display: inline-block; background: var(--accent);
+      color: white; padding: 0.25rem 0.625rem; border-radius: 4px;
+      font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+      min-width: 70px; text-align: center;
+    }
+    .mechanism-value { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+
+    .txt-record-item {
+      background: var(--secondary-bg); border: 1px solid var(--border);
+      border-radius: 6px; padding: 1rem; margin-bottom: 0.75rem;
+    }
+    .txt-record-type {
+      font-size: 0.75rem; font-weight: 600; color: var(--accent);
+      text-transform: uppercase; margin-bottom: 0.5rem;
+    }
+    .txt-record-content {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
+      color: var(--text-primary); word-break: break-all; line-height: 1.6;
     }
 
-    .error-icon {
-      font-size: 1.5rem;
-      flex-shrink: 0;
-    }
-
-    .error-content {
-      flex: 1;
-    }
-
-    .error-title {
-      font-weight: 600;
-      color: var(--fail);
-      margin-bottom: 0.25rem;
-    }
-
-    .error-message {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-    }
-
-    /* ============ NO RESULTS STATE ============ */
-    .no-results {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 2rem;
-      margin-bottom: 1rem;
-    }
-
-    .no-results-content {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      line-height: 1.8;
+    @media (max-width: 768px) {
+      .app-container { padding: 1.5rem 1rem; }
+      .header h1 { font-size: 2rem; }
+      .data-row { grid-template-columns: 1fr; gap: 0.25rem; }
+      .data-label { font-size: 0.75rem; }
     }
   </style>
 </head>
@@ -550,7 +265,6 @@
 const { useState } = React;
 const API_URL = 'https://email-dns-backend.onrender.com';
 
-/* ==================== STATUS BADGE ==================== */
 const StatusBadge = ({status}) => (
   <span className={`status-badge ${status.toLowerCase()}`}>
     <span className="status-indicator"></span>
@@ -561,56 +275,96 @@ const StatusBadge = ({status}) => (
 /* ==================== MX SECTION ==================== */
 const MXSection = ({data}) => {
   if (!data) return null;
-
   return (
     <div className="section-card">
       <div className="section-header">
         <h3>📧 MX Records</h3>
         <StatusBadge status={data.status || 'UNKNOWN'}/>
       </div>
-
       {data.provider && (
         <div className="info-box">
           <div className="info-box-content">
             <strong>Detected Provider:</strong> {data.provider.name}<br/>
             <strong>Confidence:</strong> {data.provider.confidence}<br/>
-            {data.provider.matchedBy && (
-              <><strong>Matched MX:</strong> {data.provider.matchedBy}</>
-            )}
+            {data.provider.matchedBy && <><strong>Matched MX:</strong> {data.provider.matchedBy}</>}
           </div>
         </div>
       )}
-
       {data.records && data.records.length > 0 ? (
         <table className="mx-table">
-          <thead>
-            <tr>
-              <th>Priority</th>
-              <th>Mail Server</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Priority</th><th>Mail Server</th></tr></thead>
           <tbody>
             {data.records.map((record, index) => (
-              <tr key={index}>
-                <td>{record.priority}</td>
-                <td>{record.exchange}</td>
-              </tr>
+              <tr key={index}><td>{record.priority}</td><td>{record.exchange}</td></tr>
             ))}
           </tbody>
         </table>
       ) : (
         <div className="no-results">
-          <div className="no-results-content">
-            ⚠️ No MX records found for this domain.
-          </div>
+          <div className="no-results-content">⚠️ No MX records found for this domain.</div>
         </div>
       )}
-
       {data.issues && data.issues.length > 0 && (
         <div style={{marginTop: '1rem'}}>
           {data.issues.map((issue, index) => (
             <div key={index} className="info-box" style={{borderLeftColor: 'var(--warn)'}}>
               <div className="info-box-content">⚠️ {issue}</div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ==================== SPF SECTION ==================== */
+const SPFSection = ({data}) => {
+  if (!data) return null;
+  return (
+    <div className="section-card">
+      <div className="section-header">
+        <h3>🛡️ SPF Record</h3>
+        <StatusBadge status={data.status || 'UNKNOWN'}/>
+      </div>
+      {data.record ? (
+        <>
+          <div className="data-table">
+            <div className="data-row">
+              <div className="data-label">Policy</div>
+              <div className="data-value">{data.policy}</div>
+            </div>
+            <div className="data-row">
+              <div className="data-label">DNS Lookups</div>
+              <div className="data-value">{data.lookupCount} / 10 {data.lookupCount > 10 ? '❌' : '✓'}</div>
+            </div>
+          </div>
+          <div className="code-block">{data.record}</div>
+          {data.mechanisms && data.mechanisms.length > 0 && (
+            <div className="mechanism-list">
+              <strong style={{fontSize: '0.875rem', color: 'var(--text-secondary)'}}>
+                Authorized Senders:
+              </strong>
+              {data.mechanisms.map((mech, i) => (
+                <div key={i} className="mechanism-item">
+                  <span className="mechanism-type">{mech.type}</span>
+                  <span className="mechanism-value">{mech.value}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="no-results">
+          <div className="no-results-content">❌ No SPF record found.</div>
+        </div>
+      )}
+      {data.issues && data.issues.length > 0 && (
+        <div style={{marginTop: '1rem'}}>
+          {data.issues.map((issue, index) => (
+            <div key={index} className="info-box" style={{borderLeftColor: data.status === 'FAIL' ? 'var(--fail)' : 'var(--warn)'}}>
+              <div className="info-box-content">
+                {data.status === 'FAIL' ? '❌' : '⚠️'} {issue}
+              </div>
             </div>
           ))}
         </div>
@@ -622,45 +376,32 @@ const MXSection = ({data}) => {
 /* ==================== DKIM SECTION ==================== */
 const DKIMSection = ({data}) => {
   if (!data) return null;
-
   return (
     <div className="section-card">
       <div className="section-header">
         <h3>🔐 DKIM Records</h3>
         <StatusBadge status={data.status || 'UNKNOWN'}/>
       </div>
-
       {data.selectors && data.selectors.length > 0 ? (
         data.selectors.map((selector, index) => (
           <div key={index} className="dkim-selector">
             <div className="dkim-selector-header">
-              <div className="dkim-selector-name">
-                {selector.selector}._domainkey
-              </div>
+              <div className="dkim-selector-name">{selector.selector}._domainkey</div>
               <div className="dkim-meta">
-                <div className="dkim-meta-item">
-                  <span>🔑</span>
-                  <span>{selector.keyType || 'Unknown'}</span>
-                </div>
-                <div className="dkim-meta-item">
-                  <span>📏</span>
-                  <span>{selector.keySize || 'Unknown'}</span>
-                </div>
+                <div className="dkim-meta-item"><span>🔑</span><span>{selector.keyType || 'Unknown'}</span></div>
+                <div className="dkim-meta-item"><span>📏</span><span>{selector.keySize || 'Unknown'}</span></div>
               </div>
             </div>
-            {selector.record && (
-              <div className="code-block">{selector.record}</div>
-            )}
+            {selector.record && <div className="code-block">{selector.record}</div>}
           </div>
         ))
       ) : (
         <div className="no-results">
           <div className="no-results-content">
-            ℹ️ No DKIM records found on common selectors. This doesn't necessarily mean DKIM is missing - your domain may use custom selectors.
+            ℹ️ No DKIM records found on common selectors.
           </div>
         </div>
       )}
-
       {data.issues && data.issues.length > 0 && (
         <div style={{marginTop: '1rem'}}>
           {data.issues.map((issue, index) => (
@@ -674,39 +415,73 @@ const DKIMSection = ({data}) => {
   );
 };
 
-/* ==================== REPUTATION SECTION ==================== */
-const ReputationSection = ({data}) => {
+/* ==================== DMARC SECTION ==================== */
+const DMARCSection = ({data}) => {
   if (!data) return null;
-
-  const getStatusFromLevel = (level) => {
-    if (level === 'Good') return 'PASS';
-    if (level === 'Medium') return 'WARN';
-    return 'FAIL';
-  };
-
   return (
     <div className="section-card">
       <div className="section-header">
-        <h3>📊 Domain Reputation</h3>
-        <StatusBadge status={getStatusFromLevel(data.level)}/>
+        <h3>📋 DMARC Record</h3>
+        <StatusBadge status={data.status || 'UNKNOWN'}/>
       </div>
-
-      <div className="data-table">
-        <div className="data-row">
-          <div className="data-label">Score</div>
-          <div className="data-value">{data.score}/100</div>
+      {data.record ? (
+        <>
+          <div className="code-block">{data.record}</div>
+          {data.parsed && (
+            <div className="data-table">
+              <div className="data-row">
+                <div className="data-label">Policy</div>
+                <div className="data-value">{data.parsed.policy}</div>
+              </div>
+              {data.parsed.subdomainPolicy && (
+                <div className="data-row">
+                  <div className="data-label">Subdomain Policy</div>
+                  <div className="data-value">{data.parsed.subdomainPolicy}</div>
+                </div>
+              )}
+              <div className="data-row">
+                <div className="data-label">Percentage</div>
+                <div className="data-value">{data.parsed.percentage}%</div>
+              </div>
+              <div className="data-row">
+                <div className="data-label">DKIM Alignment</div>
+                <div className="data-value">{data.parsed.dkimAlignment === 'r' ? 'Relaxed' : 'Strict'}</div>
+              </div>
+              <div className="data-row">
+                <div className="data-label">SPF Alignment</div>
+                <div className="data-value">{data.parsed.spfAlignment === 'r' ? 'Relaxed' : 'Strict'}</div>
+              </div>
+              {data.parsed.rua && (
+                <div className="data-row">
+                  <div className="data-label">Aggregate Reports</div>
+                  <div className="data-value">{data.parsed.rua}</div>
+                </div>
+              )}
+              {data.parsed.ruf && (
+                <div className="data-row">
+                  <div className="data-label">Forensic Reports</div>
+                  <div className="data-value">{data.parsed.ruf}</div>
+                </div>
+              )}
+              <div className="data-row">
+                <div className="data-label">Report Interval</div>
+                <div className="data-value">{parseInt(data.parsed.reportInterval) / 3600} hours</div>
+              </div>
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="no-results">
+          <div className="no-results-content">❌ No DMARC record found.</div>
         </div>
-        <div className="data-row">
-          <div className="data-label">Risk Level</div>
-          <div className="data-value">{data.level}</div>
-        </div>
-      </div>
-
-      {data.notes && data.notes.length > 0 && (
+      )}
+      {data.issues && data.issues.length > 0 && (
         <div style={{marginTop: '1rem'}}>
-          {data.notes.map((note, index) => (
-            <div key={index} className="info-box" style={{borderLeftColor: 'var(--warn)'}}>
-              <div className="info-box-content">⚠️ {note}</div>
+          {data.issues.map((issue, index) => (
+            <div key={index} className="info-box" style={{borderLeftColor: data.status === 'FAIL' ? 'var(--fail)' : 'var(--warn)'}}>
+              <div className="info-box-content">
+                {data.status === 'FAIL' ? '❌' : '⚠️'} {issue}
+              </div>
             </div>
           ))}
         </div>
@@ -718,14 +493,12 @@ const ReputationSection = ({data}) => {
 /* ==================== PTR SECTION ==================== */
 const PTRSection = ({data}) => {
   if (!data) return null;
-
   return (
     <div className="section-card">
       <div className="section-header">
         <h3>🔄 PTR Record (Reverse DNS)</h3>
         <StatusBadge status={data.status || 'UNKNOWN'}/>
       </div>
-
       {data.status !== 'SKIPPED' && (
         <>
           {data.hostname && (
@@ -742,7 +515,6 @@ const PTRSection = ({data}) => {
               )}
             </div>
           )}
-
           {data.issues && data.issues.length > 0 && (
             <div style={{marginTop: '1rem'}}>
               {data.issues.map((issue, index) => (
@@ -756,12 +528,113 @@ const PTRSection = ({data}) => {
           )}
         </>
       )}
-
       {data.status === 'SKIPPED' && (
         <div className="no-results">
           <div className="no-results-content">
             ℹ️ No IP address provided. Add a sending IP address to check PTR records.
           </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ==================== TXT RECORDS SECTION ==================== */
+const TXTSection = ({data}) => {
+  if (!data) return null;
+  return (
+    <div className="section-card">
+      <div className="section-header">
+        <h3>📝 All TXT Records</h3>
+        <StatusBadge status={data.status || 'UNKNOWN'}/>
+      </div>
+      {data.all && data.all.length > 0 ? (
+        <>
+          <div className="info-box">
+            <div className="info-box-content">
+              <strong>Total TXT Records:</strong> {data.total}
+            </div>
+          </div>
+          {data.categorized.spf.length > 0 && (
+            <>
+              <h4 style={{fontSize: '0.95rem', marginBottom: '0.75rem', color: 'var(--text-secondary)'}}>
+                SPF Records
+              </h4>
+              {data.categorized.spf.map((record, i) => (
+                <div key={i} className="txt-record-item">
+                  <div className="txt-record-type">SPF</div>
+                  <div className="txt-record-content">{record}</div>
+                </div>
+              ))}
+            </>
+          )}
+          {data.categorized.verification.length > 0 && (
+            <>
+              <h4 style={{fontSize: '0.95rem', marginTop: '1rem', marginBottom: '0.75rem', color: 'var(--text-secondary)'}}>
+                Verification Records
+              </h4>
+              {data.categorized.verification.map((record, i) => (
+                <div key={i} className="txt-record-item">
+                  <div className="txt-record-type">Verification</div>
+                  <div className="txt-record-content">{record}</div>
+                </div>
+              ))}
+            </>
+          )}
+          {data.categorized.other.length > 0 && (
+            <>
+              <h4 style={{fontSize: '0.95rem', marginTop: '1rem', marginBottom: '0.75rem', color: 'var(--text-secondary)'}}>
+                Other TXT Records
+              </h4>
+              {data.categorized.other.map((record, i) => (
+                <div key={i} className="txt-record-item">
+                  <div className="txt-record-type">Other</div>
+                  <div className="txt-record-content">{record}</div>
+                </div>
+              ))}
+            </>
+          )}
+        </>
+      ) : (
+        <div className="no-results">
+          <div className="no-results-content">No TXT records found.</div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ==================== REPUTATION SECTION ==================== */
+const ReputationSection = ({data}) => {
+  if (!data) return null;
+  const getStatusFromLevel = (level) => {
+    if (level === 'Good') return 'PASS';
+    if (level === 'Medium') return 'WARN';
+    return 'FAIL';
+  };
+  return (
+    <div className="section-card">
+      <div className="section-header">
+        <h3>📊 Domain Reputation</h3>
+        <StatusBadge status={getStatusFromLevel(data.level)}/>
+      </div>
+      <div className="data-table">
+        <div className="data-row">
+          <div className="data-label">Score</div>
+          <div className="data-value">{data.score}/100</div>
+        </div>
+        <div className="data-row">
+          <div className="data-label">Risk Level</div>
+          <div className="data-value">{data.level}</div>
+        </div>
+      </div>
+      {data.notes && data.notes.length > 0 && (
+        <div style={{marginTop: '1rem'}}>
+          {data.notes.map((note, index) => (
+            <div key={index} className="info-box" style={{borderLeftColor: 'var(--warn)'}}>
+              <div className="info-box-content">⚠️ {note}</div>
+            </div>
+          ))}
         </div>
       )}
     </div>
@@ -789,13 +662,8 @@ function App() {
     try {
       const response = await fetch(`${API_URL}/api/check`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          domain: domain.trim(),
-          ip: ip.trim() || null
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ domain: domain.trim(), ip: ip.trim() || null }),
       });
 
       if (!response.ok) {
@@ -813,16 +681,14 @@ function App() {
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleCheck();
-    }
+    if (e.key === 'Enter') handleCheck();
   };
 
   return (
     <div className="app-container">
       <header className="header">
         <h1>Email DNS Inspector</h1>
-        <p>Comprehensive email authentication & DNS record analysis</p>
+        <p>Professional email authentication & DNS security analysis</p>
       </header>
 
       <div className="input-section">
@@ -855,11 +721,7 @@ function App() {
             />
           </div>
         </div>
-        <button 
-          className="check-button" 
-          onClick={handleCheck}
-          disabled={loading}
-        >
+        <button className="check-button" onClick={handleCheck} disabled={loading}>
           {loading ? 'Checking DNS Records...' : 'Check DNS'}
         </button>
       </div>
@@ -894,9 +756,12 @@ function App() {
       {results && !loading && (
         <>
           <MXSection data={results.mx} />
+          <SPFSection data={results.spf} />
           <DKIMSection data={results.dkim} />
-          <ReputationSection data={results.reputation} />
+          <DMARCSection data={results.dmarc} />
+          <TXTSection data={results.txt} />
           {results.ptr && <PTRSection data={results.ptr} />}
+          <ReputationSection data={results.reputation} />
         </>
       )}
     </div>
