@@ -272,6 +272,31 @@ const StatusBadge = ({status}) => (
   </span>
 );
 
+const formatList = (value) => {
+  if (!value) return '';
+  return Array.isArray(value) ? value.filter(Boolean).join(', ') : value;
+};
+
+const formatDate = (value) => {
+  if (!value) return '';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+};
+
+const normalizeProvider = (record = {}, fallback = {}) => {
+  const provider = record.provider || fallback.provider || fallback || {};
+  return {
+    name: provider.name || record.providerName || record.provider || fallback.name || 'Unknown',
+    score: provider.score ?? record.providerScore ?? record.score ?? fallback.score ?? 'N/A',
+    confidence: provider.confidence || record.confidence || fallback.confidence || '',
+    matchedBy: provider.matchedBy || record.matchedBy || fallback.matchedBy || '',
+  };
+};
+
 /* ==================== MX SECTION ==================== */
 const MXSection = ({data}) => {
   if (!data) return null;
@@ -309,6 +334,154 @@ const MXSection = ({data}) => {
           {data.issues.map((issue, index) => (
             <div key={index} className="info-box" style={{borderLeftColor: 'var(--warn)'}}>
               <div className="info-box-content">⚠️ {issue}</div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ==================== NAME SERVERS SECTION ==================== */
+const NameServersSection = ({data}) => {
+  if (!data) return null;
+  const records = data.records || data.nameServers || data.servers || [];
+  const primaryProvider = normalizeProvider({}, data.provider || data.detectedProvider || {});
+  return (
+    <div className="section-card">
+      <div className="section-header">
+        <h3>🌐 Live Name Servers</h3>
+        <StatusBadge status={data.status || (records.length ? 'PASS' : 'WARN')}/>
+      </div>
+      {data.checkedAt && (
+        <div className="info-box">
+          <div className="info-box-content">
+            <strong>Live lookup:</strong> {formatDate(data.checkedAt)}
+          </div>
+        </div>
+      )}
+      {(primaryProvider.name !== 'Unknown' || primaryProvider.score !== 'N/A') && (
+        <div className="info-box">
+          <div className="info-box-content">
+            <strong>Detected DNS Provider:</strong> {primaryProvider.name}<br/>
+            <strong>Provider Score:</strong> {primaryProvider.score}{primaryProvider.score !== 'N/A' && '/100'}
+            {primaryProvider.confidence && <><br/><strong>Confidence:</strong> {primaryProvider.confidence}</>}
+            {primaryProvider.matchedBy && <><br/><strong>Matched By:</strong> {primaryProvider.matchedBy}</>}
+          </div>
+        </div>
+      )}
+      {records.length > 0 ? (
+        <table className="mx-table">
+          <thead>
+            <tr><th>Name Server</th><th>DNS Provider</th><th>Score</th></tr>
+          </thead>
+          <tbody>
+            {records.map((record, index) => {
+              const provider = normalizeProvider(record, data.provider || data.detectedProvider || {});
+              const host = typeof record === 'string' ? record : (record.host || record.name || record.value || record.server);
+              return (
+                <tr key={index}>
+                  <td>{host}</td>
+                  <td>{provider.name}</td>
+                  <td>{provider.score}{provider.score !== 'N/A' && '/100'}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      ) : (
+        <div className="no-results">
+          <div className="no-results-content">⚠️ No live NS records returned for this domain.</div>
+        </div>
+      )}
+      {data.issues && data.issues.length > 0 && (
+        <div style={{marginTop: '1rem'}}>
+          {data.issues.map((issue, index) => (
+            <div key={index} className="info-box" style={{borderLeftColor: data.status === 'FAIL' ? 'var(--fail)' : 'var(--warn)'}}>
+              <div className="info-box-content">{data.status === 'FAIL' ? '❌' : '⚠️'} {issue}</div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ==================== DOMAIN REGISTRAR SECTION ==================== */
+const RegistrarSection = ({data}) => {
+  if (!data) return null;
+  const statusValues = formatList(data.domainStatus || data.statuses);
+  return (
+    <div className="section-card">
+      <div className="section-header">
+        <h3>🏷️ Domain Registrar</h3>
+        <StatusBadge status={data.status || (data.name || data.registrar ? 'PASS' : 'WARN')}/>
+      </div>
+      {(data.name || data.registrar) ? (
+        <div className="data-table">
+          <div className="data-row">
+            <div className="data-label">Registrar</div>
+            <div className="data-value">{data.name || data.registrar}</div>
+          </div>
+          {(data.ianaId || data.registrarId) && (
+            <div className="data-row">
+              <div className="data-label">IANA ID</div>
+              <div className="data-value">{data.ianaId || data.registrarId}</div>
+            </div>
+          )}
+          {data.whoisServer && (
+            <div className="data-row">
+              <div className="data-label">WHOIS Server</div>
+              <div className="data-value">{data.whoisServer}</div>
+            </div>
+          )}
+          {data.url && (
+            <div className="data-row">
+              <div className="data-label">Registrar URL</div>
+              <div className="data-value">{data.url}</div>
+            </div>
+          )}
+          {data.createdAt && (
+            <div className="data-row">
+              <div className="data-label">Created</div>
+              <div className="data-value">{formatDate(data.createdAt)}</div>
+            </div>
+          )}
+          {data.updatedAt && (
+            <div className="data-row">
+              <div className="data-label">Updated</div>
+              <div className="data-value">{formatDate(data.updatedAt)}</div>
+            </div>
+          )}
+          {data.expiresAt && (
+            <div className="data-row">
+              <div className="data-label">Expires</div>
+              <div className="data-value">{formatDate(data.expiresAt)}</div>
+            </div>
+          )}
+          {statusValues && (
+            <div className="data-row">
+              <div className="data-label">Domain Status</div>
+              <div className="data-value">{statusValues}</div>
+            </div>
+          )}
+          {data.source && (
+            <div className="data-row">
+              <div className="data-label">Source</div>
+              <div className="data-value">{data.source}</div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="no-results">
+          <div className="no-results-content">⚠️ Registrar information was not returned for this domain.</div>
+        </div>
+      )}
+      {data.issues && data.issues.length > 0 && (
+        <div style={{marginTop: '1rem'}}>
+          {data.issues.map((issue, index) => (
+            <div key={index} className="info-box" style={{borderLeftColor: data.status === 'FAIL' ? 'var(--fail)' : 'var(--warn)'}}>
+              <div className="info-box-content">{data.status === 'FAIL' ? '❌' : '⚠️'} {issue}</div>
             </div>
           ))}
         </div>
@@ -756,6 +929,8 @@ function App() {
       {results && !loading && (
         <>
           <MXSection data={results.mx} />
+          <NameServersSection data={results.nameServers || results.nameservers || results.ns} />
+          <RegistrarSection data={results.registrar || results.domainRegistrar || results.whois} />
           <SPFSection data={results.spf} />
           <DKIMSection data={results.dkim} />
           <DMARCSection data={results.dmarc} />
